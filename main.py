@@ -12,6 +12,8 @@ LABEL_COLOR = "#25265E"
 LIGHT_BLUE = "#CCEDFF"
 #LABEL_TEST = "#ff0000"
 
+#DARK MODE SETT
+
 class Calculator:
     def __init__(self):
         self.window = tk.Tk()
@@ -31,7 +33,7 @@ class Calculator:
             4: (2, 1), 5: (2, 2), 6: (2, 3),
             1: (3, 1), 2: (3, 2), 3: (3, 3),
             0: (4, 2), '.': (4, 1)
-        }
+        }                      #/                   #*
         self.operations = {"/": "\u00F7", "*": "\u00D7", "-": "-", "+": "+"}
         self.buttons_frame = self.create_buttons_frame()
 
@@ -44,6 +46,7 @@ class Calculator:
         self.create_digit_buttons()
         self.create_operator_buttons()
         self.create_special_buttons()
+        self.create_percent_button()
 
     def create_special_buttons(self):
         self.create_clear_button()
@@ -84,6 +87,7 @@ class Calculator:
         self.update_total_label()
         self.update_label()
 
+
     #za pomoca pętli tworzymy przciski operacyjne
     def create_operator_buttons(self):
         i = 0
@@ -92,6 +96,19 @@ class Calculator:
                                font=DEFAULT_FONT_STYLE, borderwidth=0, command=lambda x=operator:self.append_operator(x))
             button.grid(row=i, column=4, sticky=tk.NSEW)
             i+=1
+
+    #operacja przycisku procentowego
+    def create_percent_operation(self):
+        temporary = (float(temporary)*float(self.current_expression))/100.0
+        self.current_expression = str(temporary)
+        self.update_label()
+        self.update_total_label()
+
+    def create_percent_button(self):
+        button = tk.Button(self.buttons_frame, text="%", bg=OFF_WHITE, fg=LABEL_COLOR,
+                           font=DEFAULT_FONT_STYLE, borderwidth=0, command=lambda:self.create_percent_operation())
+        button.grid(row=0, column=3, sticky=tk.NSEW)
+
     #funkcja przycisku clear usuwajaca cale dzialanie a nizej sam przycisk
     def clear_total_expression(self):
         self.current_expression = ""
@@ -136,7 +153,14 @@ class Calculator:
     
     #aktualizacje dla inputu oraz total inputu
     def update_total_label(self):
-        self.total_label.config(text=self.total_expression)
+        expression = self.total_expression
+        #expression = expression.replace("/", " \u00F7 ")    /pierwsza werjsa
+        #expression = expression.replace("*", " \u00D7 ")
+
+        for operator, symbol in self.operations.items():
+            expression = expression.replace(operator, " "+symbol+" ")
+
+        self.total_label.config(text=expression)
 
     def update_label(self):
         self.label.config(text=self.current_expression)
